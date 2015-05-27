@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon version="0.2">
+	<title>멀티미디어 섬네일 애드온</title>
+	<description>멀티미디어(유튜브, 사운드클라우드, 비메오, 다음tv팟, 네이버 비디오, 판도라tv, 데일리모션)의 섬네일을 자동으로 생성해줍니다.</description>
+	<version>2.0.0</version>
+	<date>2014-06-22</date>
+	<author email_address="m@ake.kr" link="http://xelab.kr/">
+		<name>Jin Hu, Baek(mAKEkr)</name>
+	</author>
+	<extra_vars>
+		<var name="mt_thumbnailres_youtube" type="select">
+			<title>유튜브 섬네일 해상도 선택</title>
+			<description>동영상 섬네일의 크기를 지정해주세요. 초 고해상도(maxresdefault)를 사용할 경우, 지원되지 않는 동영상이 있을 수 있습니다.</description>
+			<options value="hqdefault">
+				<title>기본값(hqdefault) (480x360)</title>
+			</options>
+			<options value="sddefault">
+				<title>고해상도(sddefault) (640x480)</title>
+			</options>
+			<options value="maxresdefault">
+				<title>초 고해상도(maxresdefault) (1920x1080)</title>
+			</options>
+		</var>
+		<var name="mt_thumbnailres_youtube_extend" type="select">
+			<title>유튜브 섬네일 이미지까지 동시생성</title>
+			<description>초 고해상도 섬네일이 존재하지 않을 경우, 기본값의 섬네일을 가져오도록 이미지 태그를 총 2개를 생성합니다.</description>
+			<options value="disable">
+				<title>사용하지 않기(기본)</title>
+			</options>
+			<options value="enable">
+				<title>사용하기</title>
+			</options>
+		</var>
+		<var name="mt_thumbnailres_soundcloud" type="select">
+			<title>사운드클라우드(soundcloud) 이미지 해상도 선택</title>
+			<options value="t300x300">
+				<title>기본값 (300x300)</title>
+			</options>
+			<options value="original">
+				<title>원본 (original)</title>
+			</options>
+			<options value="t500x500">
+				<title>500x500</title>
+			</options>
+			<options value="crop">
+				<title>400x400</title>
+			</options>
+			<options value="large">
+				<title>100x100</title>
+			</options>
+		</var>
+		<var name="mt_thumbnailres_vimeo" type="select">
+			<title>비메오(vimeo) 이미지 해상도 선택</title>
+			<options value="thumbnail_medium">
+				<title>중간(200x150)</title>
+			</options>
+			<options value="thumbnail_large">
+				<title>가장 큼(640x360)</title>
+			</options>
+			<options value="thumbnail_small">
+				<title>작음(100x75)</title>
+			</options>
+		</var>
+		<var name="mt_thumbnailres_dailymotion" type="select">
+			<title>데일리모션(dailymotion) 이미지 해상도 선택</title>
+			<options value="thumbnail_240_url">
+				<title>세로 240px</title>
+			</options>
+			<options value="thumbnail_360_url">
+				<title>세로 360px</title>
+			</options>
+			<options value="thumbnail_480_url">
+				<title>세로 480px</title>
+			</options>
+			<options value="thumbnail_720_url">
+				<title>세로 720px</title>
+			</options>
+			<options value="thumbnail_url">
+				<title>원본(original)</title>
+			</options>
+		</var>
+		<var name="mt_enable_extravar" type="select">
+			<title>확장변수 내에서 멀티미디어 가져오기</title>
+			<description><![CDATA[멀티미디어 목록을 확장변수에서 가져올지 확인합니다.]]></description>
+			<options value="disable">
+				<title>사용 안함(기본)</title>
+			</options>
+			<options value="enable">
+				<title>사용</title>
+			</options>
+		</var>
+		<var name="mt_extravar_name" type="text">
+			<title>확장변수 이름(사용자 정의 이름)</title>
+			<description><![CDATA[해당 옵션을 적용하려면 확장변수 내에서 멀티미디어 가져오기 옵션을 사용하셔야합니다.<br />사용자에게 표시되는 이름이 아닌 게시판 내에서 인식되는 이름을 적어주셔야합니다.<br />영문, 숫자, _를 조합해서 사용할 수 있으며 첫 글자는 영문인 이름입니다.<br />해당 확장변수를 찾을 수 없을경우 본문 내용을 불러오게됩니다]]></description>
+		</var>
+	</extra_vars>
+</addon> 
