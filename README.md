@@ -5,4 +5,4 @@ CMS인 XpressEngine에서 문서 생성시 문서 내 게시물 안에 임베디
 Youtube, Vimeo, Soundcloud, dailymotion, Naver Video, Daum tvpot, Pandora.tv
 
 ## License
-Privated
+LGPL v3.0
