@@ -9,6 +9,8 @@
 			if($options->mt_thumbnailres_dailymotion === NULL) $options->mt_thumbnailres_dailymotion = 'thumbnail_240_url';
 
 			$this->options = $options;
+			$this->beforeValidate = '/<img[^>]+src=["\']?([^>"\']+)["\'].*?rel=["\']?([^>"\']+)["\'].*?[^>]>/im';
+			$this->validateRegExr = '/<img[^>]+src=["\']?([^>"\']+)["\'].*?alt=["\']?([^>"\']+)["\'].*?[^>]>/im';
 		}
 
 		function checkDocumentThumbExsits($document_srl, $content) {
@@ -28,7 +30,7 @@
 					break;
 				}
 			} else {
-				preg_match_all('/<img[^>]+src=["\']?([^>"\']+)["\'].*?rel=["\']?([^>"\']+)["\'].*?[^>]>/im', $content, $matches);
+				preg_match_all($this->validateRegExr, $content, $matches);
 
 				foreach($matches as $key => $val){
 					if ($val['0'] === null) continue;
@@ -45,7 +47,7 @@
 			/*
 				검사방법 - 섬네일 애드온으로 생성되었는지 확인 alt="~~~~:~~~~~~~~"포맷 생성되었다면 true 없다면 false
 			*/
-			preg_match_all('/<img[^>]+src=["\']?([^>"\']+)["\'].*?rel=["\']?([^>"\']+)["\'].*?[^>]>/im', $content, $matches);
+			preg_match_all($this->validateRegExr, $content, $matches);
 
 			$return_value = '';
 
@@ -64,7 +66,7 @@
 		}
 
 		function getMultimediaThumb($content) {
-			preg_match_all('/<img[^>]+src=["\']?([^>"\']+)["\'].*?rel=["\']?([^>"\']+)["\'].*?[^>]>/im', $content, $matches);
+			preg_match_all($this->validateRegExr, $content, $matches);
 
 			$return_value = array();
 
@@ -231,19 +233,19 @@
 				$return_string = '';
 
 				foreach($thumbnail_url as $val){
-					$return_string .= '<img src="' . $val. '" style="width:0;height:0;overflow:hidden;display:none;" rel="' . $format . '" />';
+					$return_string .= '<img src="' . $val. '" alt="' . $format . '" />';
 				}
 
-				if ( $this->checkXEVersion() ) {
+				if ( $this->checkXEVersion() ) { // if XE Core version over 1.8.x
 					$return_string = '<!-- ' . $return_string . ' -->';
 				}
 
 				return $return_string . "\n";
 				unset($return_string);
 			} else {
-				$thumbnail_url = ($thumbnail_url !== false) ? '<img src="' . $thumbnail_url . '" style="width:0;height:0;overflow:hidden;display:none;" rel="' . $format . '" />' : false;
+				$thumbnail_url = ($thumbnail_url !== false) ? '<img src="' . $thumbnail_url . '" alt="' . $format . '" />' : false;
 				if ( $this->checkXEVersion() && ($thumbnail_url !== false) ) {
-					$thumbnail_url = '<!-- ' . $thumbnail_url . ' -->' . "\n";
+					// $thumbnail_url = '<!-- ' . $thumbnail_url . ' -->' . "\n";
 				} else if ($thumbnail_url !== false) {
 					$thumbnail_url = $thumbnail_url . "\n";
 				}
@@ -255,8 +257,17 @@
 			unset($format);
 		}
 
+		function hideMultimediaThumb($content) {
+			$content = preg_replace($this->validateRegExr, '<!-- $0 -->', $content);
+
+			return $content;
+			unset($content);			
+		}
+
 		function removeMultimediaThumb($content) {
-			$content = preg_replace('/<img[^>]+src=["\']?([^>"\']+)["\'].*?rel=["\']?([^>"\']+)["\'].*?[^>]>/im', '<!-- $0 -->', $content);
+			// 2.0.0 type thumbnail img tag remove
+			$content = preg_replace($this->beforeValidate, '', $content);
+			$content = preg_replace($this->validateRegExr, '', $content);
 
 			return $content;
 			unset($content);
@@ -265,13 +276,14 @@
 		/* Additional Scripts(common function or methods)
 		*/
 
-		function getAddonConfig(){
+		function getAddonConfig() {
 			return $this->options;
 		}
 
-		function checkXEVersion(){
+		function checkXEVersion() {
 			list($major, $minor, $patch) = explode('.', __XE_VERSION__);
-			if(($major >= 1) && ($minor >= 8)) {
+			if(($major >= 1) && ($minor >= 8))
+			{
 				return true;
 			} else {
 				return false;
