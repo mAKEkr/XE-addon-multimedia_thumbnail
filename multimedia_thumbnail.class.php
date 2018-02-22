@@ -92,6 +92,9 @@
 		function checkMultimediaFormat($format) {
 			list($service_name, $service_id) = explode(':', $format);
 
+      /*
+        해당부분 정규식 한개로 대응할 수 있도록 변경할것
+      */
 			switch($service_name){
 				case 'youtube':
 					preg_match('/[(A-Za-z0-9-_)+]/i', $format, $result);
