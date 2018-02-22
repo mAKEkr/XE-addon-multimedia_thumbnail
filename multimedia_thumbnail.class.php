@@ -3,9 +3,9 @@
 		var $options;
 
 		function __construct($options){
-			if($options->mt_thumbnailres_youtube	 === NULL) $options->mt_thumbnailres_youtube	 = 'hqdefault';
+			if($options->mt_thumbnailres_youtube	   === NULL) $options->mt_thumbnailres_youtube     = 'hqdefault';
 			if($options->mt_thumbnailres_soundcloud  === NULL) $options->mt_thumbnailres_soundcloud  = 't300x300';
-			if($options->mt_thumbnailres_vimeo		 === NULL) $options->mt_thumbnailres_vimeo		 = 'thumbnail_medium';
+			if($options->mt_thumbnailres_vimeo		   === NULL) $options->mt_thumbnailres_vimeo       = 'thumbnail_medium';
 			if($options->mt_thumbnailres_dailymotion === NULL) $options->mt_thumbnailres_dailymotion = 'thumbnail_240_url';
 
 			$this->options = $options;
@@ -20,7 +20,7 @@
 			$attachment_list = $oFileModel->getFiles($document_srl, array(), 'file_srl', true);
 
 			if(count($attachment_list) != '0'){
-				$allow_attachment_extension = Array('jpg', 'jpeg', 'gif', 'png', 'bmp');
+				$allow_attachment_extension = Array('jpg', 'jpeg', 'gif', 'png');
 
 				foreach($attachment_list as $val){
 					if( ! in_array(strtolower(pathinfo($val->uploaded_filename, PATHINFO_EXTENSION)), $allow_attachment_extension)) continue;
@@ -45,7 +45,12 @@
 
 		function checkMultimediaThumbExists($content) {
 			/*
-				검사방법 - 섬네일 애드온으로 생성되었는지 확인 alt="~~~~:~~~~~~~~"포맷 생성되었다면 true 없다면 false
+				검사방법 - 섬네일 애드온으로 생성되었는지 확인.
+        1. 구버전을 체크하기 위하여 img 태그를 전체 긁음
+        2. class="xe-MultimediaThumb" / alt="(value)" / rel="(value)" 가 있는지 확인
+        3. class에 xe-MultimediaThumb가 존재한다면 현재 최신코드, 2.2.x 이상대에서 제작된 섬네일
+        4. rel에 multimedia format에 맞는 code가 들어가있는 경우 구버전대(1.x대, 2.0.x에서 제작된 섬네일)
+        5. alt에 multimedia format에 맞는 code가 들어가있는 경우 신버전대(2.1.x대에서 제작된 섬네일)
 			*/
 			preg_match_all($this->validateRegExr, $content, $matches);
 
@@ -152,13 +157,13 @@
 			//dailymotion
 			preg_match('/dailymotion.com\/embed\/video\/([a-zA-Z0-9_]+)/i', $url, $dailymotion);
 
-			if($youtube['0']	 !== NULL) $return_value = 'youtube:'    . $youtube['1'];
-			if($vimeo['0']		 !== NULL) $return_value = 'vimeo:'      . $vimeo['1'];
-			if($soundcloud['0']	 !== NULL) $return_value = 'soundcloud:' . $soundcloud['1'];
-			if($daum['0']		 !== NULL) $return_value = 'daum:'       . $daum['1'];
-			if($naver['0']		 !== NULL) $return_value = 'naver:'		. $naver['1']      . '|' . $naver['2'];
-			if($pandora['0']	 !== NULL) $return_value = 'pandora:'    . $pandora['1']    . '|' . $pandora['2'];
-			if($dailymotion['0'] !== NULL) $return_value = 'dailymotion:' . $dailymotion['1'];
+			if($youtube['0']	   !== NULL) $return_value = 'youtube:'      . $youtube['1'];
+			if($vimeo['0']       !== NULL) $return_value = 'vimeo:'        . $vimeo['1'];
+			if($soundcloud['0']	 !== NULL) $return_value = 'soundcloud:'   . $soundcloud['1'];
+			if($daum['0']		     !== NULL) $return_value = 'daum:'         . $daum['1'];
+			if($naver['0']       !== NULL) $return_value = 'naver:'        . $naver['1']      . '|' . $naver['2'];
+			if($pandora['0']	   !== NULL) $return_value = 'pandora:'      . $pandora['1']    . '|' . $pandora['2'];
+			if($dailymotion['0'] !== NULL) $return_value = 'dailymotion:'  . $dailymotion['1'];
 
 			unset($youtube);
 			unset($vimeo);
@@ -223,6 +228,7 @@
 					$thumbnail_url = false;
 				break;
 			}
+
 			$json = '';
 			unset($json);
 			unset($service_name);
@@ -240,9 +246,7 @@
 				unset($return_string);
 			} else {
 				$thumbnail_url = ($thumbnail_url !== false) ? '<img src="' . $thumbnail_url . '" alt="' . $format . '" />' : false;
-				if ( $this->checkXEVersion() && ($thumbnail_url !== false) ) {
-					// $thumbnail_url = '<!-- ' . $thumbnail_url . ' -->' . "\n";
-				} else if ($thumbnail_url !== false) {
+				if ($thumbnail_url !== false) {
 					$thumbnail_url = $thumbnail_url . "\n";
 				}
 
@@ -254,27 +258,19 @@
 		}
 
 		function hideMultimediaThumb($content) {
-			$content = preg_replace($this->validateRegExr, '<!-- $0 -->', $content);
 
-			return $content;
-			unset($content);			
 		}
 
 		function filterMultimediaThumb($type = 'hide', $content) {
-			if ($type === 'hide') {
-
+			if ($type === 'hide')
+      {
+        $content = preg_replace($this->validateRegExr, '<!-- $0 -->', $content);
 			} else { // $type === 'remove'
+        $content = preg_replace($this->validateRegExr, '', $content);
+      }
 
-			}
-		}
-
-		function removeMultimediaThumb($content) {
-			// 2.0.0 type thumbnail img tag remove
-			$content = preg_replace($this->beforeValidate, '', $content);
-			$content = preg_replace($this->validateRegExr, '', $content);
-
-			return $content;
-			unset($content);
+      return $content;
+      unset($content);
 		}
 
 		/* Additional Scripts(common function or methods)
