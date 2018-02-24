@@ -10,7 +10,7 @@
 
       $this->options = $options;
       // Temporary builded regular expression. maybe fixed some reason.
-      $this->validateRegExr = '/<img.?(?:class\=\"(xe\-MultimediaThumb)\")?.src=["\']?([^>"\']+)["\'].*?(?:rel|alt)=["\']?([^>"\']+)["\'].*?[^>]>/im';
+      $this->validateRegExr = '/(?:<img|(?<!^)\G)\h*(\w+)="([^"]+)"(?=.*?\/>)/im';
     }
 
     function checkDocumentThumbExsits($document_srl, $content) {
@@ -19,27 +19,30 @@
 
       $attachment_list = $oFileModel->getFiles($document_srl, array(), 'file_srl', true);
 
-      if(count($attachment_list) != '0'){
+      if (count($attachment_list) != '0') { // 첨부파일이 존재할경우
+        // 체크할 첨부파일의 확장자가 아래와 같을경우
         $allow_attachment_extension = Array('jpg', 'jpeg', 'gif', 'png');
 
-        foreach($attachment_list as $val){
+        foreach ($attachment_list as $val) {
           if( ! in_array(strtolower(pathinfo($val->uploaded_filename, PATHINFO_EXTENSION)), $allow_attachment_extension)) continue;
-          if( ! file_exists($val->uploaded_filename)) continue;
+          else if( ! file_exists($val->uploaded_filename)) continue;
           else
             $return_value = true;
           break;
         }
-      } else {
+      } else { // 첨부파일이 존재하지 않을 경우
+        // 이미지가 존재하는지 체크
         preg_match_all($this->validateRegExr, $content, $matches);
 
-        foreach($matches as $key => $val){
+        // 이미지 항목별로 반복문 재생
+        foreach ($matches as $key => $val) {
           if ($val['0'] === null) continue;
           else
             $return_value = true;
         }
+        unset($matches);
       }
 
-      unset($matches);
       return ($return_value === NULL) ? false : $return_value;
     }
 
@@ -72,7 +75,6 @@
 
     function getMultimediaThumb($content) {
       preg_match_all($this->validateRegExr, $content, $matches);
-
       $return_value = array();
 
       foreach($matches['2'] as $key => $val){
@@ -258,10 +260,6 @@
 
       unset($thumbnail_url);
       unset($format);
-    }
-
-    function hideMultimediaThumb($content) {
-
     }
 
     function filterMultimediaThumb($type = 'hide', $content) {
