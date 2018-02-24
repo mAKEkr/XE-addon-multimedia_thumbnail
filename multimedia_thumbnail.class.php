@@ -10,7 +10,7 @@
 
       $this->options = $options;
       // Temporary builded regular expression. maybe fixed some reason.
-      $this->validateRegExr = '/(?:<img|(?<!^)\G)\h*(\w+)="([^"]+)"(?=.*?\/>)/im';
+      $this->validateRegExr = '/(?:<img|(?<!^)\G)\h*(\w+)="([^"]+)"(?=.*?\/>)/g';
     }
 
     function checkDocumentThumbExsits($document_srl, $content) {
@@ -31,7 +31,7 @@
           break;
         }
       } else { // 첨부파일이 존재하지 않을 경우
-        // 이미지가 존재하는지 체크
+        // 이미지가 존재하는지 체크 인데 멀티미디어 섬네일이 존재하는지 체크
         preg_match_all($this->validateRegExr, $content, $matches);
 
         // 이미지 항목별로 반복문 재생
@@ -50,7 +50,7 @@
       /*
         검사방법 - 섬네일 애드온으로 생성되었는지 확인.
         1. 구버전을 체크하기 위하여 img 태그를 전체 긁음
-        2. class="xe-MultimediaThumb" / alt="(value)" / rel="(value)" 가 있는지 확인
+        2. class=xe-MultimediaThumb / alt=(value) / rel=(value) 가 있는지 확인
         3. class에 xe-MultimediaThumb가 존재한다면 현재 최신코드, 2.2.x 이상대에서 제작된 섬네일
         4. rel에 multimedia format에 맞는 code가 들어가있는 경우 구버전대(1.x대, 2.0.x에서 제작된 섬네일)
         5. alt에 multimedia format에 맞는 code가 들어가있는 경우 신버전대(2.1.x대에서 제작된 섬네일)
@@ -247,7 +247,7 @@
           $return_string .= '<img class="xe-MultimediaThumb" src="' . $val. '" alt="' . $format . '" />';
         }
 
-        return ($this->checkXEVersion()) '<!-- ' . $return_string . ' -->' ? : $return_string . "\n";
+        return ($this->checkXEVersion()) ? '<!-- ' . $return_string . ' -->' : $return_string . "\n";
         unset($return_string);
       } else {
         $thumbnail_url = ($thumbnail_url !== false) ? '<img src="' . $thumbnail_url . '" alt="' . $format . '" />' : false;
@@ -265,9 +265,8 @@
     function filterMultimediaThumb($type = 'hide', $content) {
       if ($type === 'hide')
       {
-        $content = preg_replace($this->validateRegExr, '<!-- $0 -->', $content);
+        // $content = preg_replace($this->validateRegExr, '<!-- $0 -->', $content);
       } else { // $type === 'remove'
-        $content = preg_replace($this->validateRegExr, '', $content);
       }
 
       return $content;
