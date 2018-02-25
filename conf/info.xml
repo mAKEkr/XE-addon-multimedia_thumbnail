@@ -2,8 +2,8 @@
 <addon version="0.2">
 	<title>멀티미디어 섬네일 애드온</title>
 	<description>멀티미디어(유튜브, 사운드클라우드, 비메오, 다음tv팟, 네이버 비디오, 판도라tv, 데일리모션)의 섬네일을 자동으로 생성해줍니다.</description>
-	<version>2.1.0</version>
-	<date>2017-08-24</date>
+	<version>2.5.0-beta</version>
+	<date>2018-02-25</date>
 	<author email_address="m@ake.kr" link="http://ake.kr/">
 		<name>Jin Hu, Baek(mAKEkr)</name>
 	</author>
