@@ -127,10 +127,6 @@
           preg_match('/[(0-9)+]/i', $format, $result);
         break;
 
-        case 'soundcloud':
-          preg_match('/[(0-9)+]/i', $format, $result);
-        break;
-
         case 'daum':
           preg_match('/[(A-Za-z0-9)+]/i', $format, $result);
         break;
@@ -166,8 +162,6 @@
       preg_match('/youtube(?:|-nocookie).com\/(?:(?:v|embed)\/)?([a-zA-Z0-9-_]+)/i', $url, $youtube);
       //vimeo
       preg_match('/player.vimeo.com\/video\/?([0-9]+)/i', $url, $vimeo);
-      //soundcloud
-      preg_match('/api.soundcloud.com\/tracks\/?([0-9]+)/i', $url, $soundcloud);
       //daum
       preg_match('/videofarm.daum.net\/controller\/video\/viewer\/Video.html\?vid=([0-9a-zA-Z]+)/i', $url, $daum);
       //naver
@@ -179,7 +173,6 @@
 
       if($youtube['0']     !== NULL) $return_value = 'youtube:'      . $youtube['1'];
       if($vimeo['0']       !== NULL) $return_value = 'vimeo:'        . $vimeo['1'];
-      if($soundcloud['0']  !== NULL) $return_value = 'soundcloud:'   . $soundcloud['1'];
       if($daum['0']        !== NULL) $return_value = 'daum:'         . $daum['1'];
       if($naver['0']       !== NULL) $return_value = 'naver:'        . $naver['1']      . '|' . $naver['2'];
       if($pandora['0']     !== NULL) $return_value = 'pandora:'      . $pandora['1']    . '|' . $pandora['2'];
