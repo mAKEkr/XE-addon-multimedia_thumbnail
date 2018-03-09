@@ -1,6 +1,7 @@
 <?php
   class MultimediaThumb{
     var $options;
+    var $variables;
     var $document;
 
     function __construct ($options, $content = NULL, $document_srl = 0) {
@@ -23,6 +24,8 @@
         'isMakeThumbnail' => false, // 애드온을 통하여 섬네일을 생성한 경우
         'isHaveThumbnail' => false // 첨부파일로 인하여 섬네일을 갖고있을 경우
       );
+
+      $this->formatCheckRegExr = '/([a-z].+)\:([^/][a-zA-Z0-9\-\_\|]+)/i';
 
       if ($this->document['content'] !== NULL) {
         $this->proccessDocument();
@@ -127,10 +130,6 @@
           preg_match('/[(0-9)+]/i', $format, $result);
         break;
 
-        case 'soundcloud':
-          preg_match('/[(0-9)+]/i', $format, $result);
-        break;
-
         case 'daum':
           preg_match('/[(A-Za-z0-9)+]/i', $format, $result);
         break;
@@ -166,8 +165,6 @@
       preg_match('/youtube(?:|-nocookie).com\/(?:(?:v|embed)\/)?([a-zA-Z0-9-_]+)/i', $url, $youtube);
       //vimeo
       preg_match('/player.vimeo.com\/video\/?([0-9]+)/i', $url, $vimeo);
-      //soundcloud
-      preg_match('/api.soundcloud.com\/tracks\/?([0-9]+)/i', $url, $soundcloud);
       //daum
       preg_match('/videofarm.daum.net\/controller\/video\/viewer\/Video.html\?vid=([0-9a-zA-Z]+)/i', $url, $daum);
       //naver
@@ -179,7 +176,6 @@
 
       if($youtube['0']     !== NULL) $return_value = 'youtube:'      . $youtube['1'];
       if($vimeo['0']       !== NULL) $return_value = 'vimeo:'        . $vimeo['1'];
-      if($soundcloud['0']  !== NULL) $return_value = 'soundcloud:'   . $soundcloud['1'];
       if($daum['0']        !== NULL) $return_value = 'daum:'         . $daum['1'];
       if($naver['0']       !== NULL) $return_value = 'naver:'        . $naver['1']      . '|' . $naver['2'];
       if($pandora['0']     !== NULL) $return_value = 'pandora:'      . $pandora['1']    . '|' . $pandora['2'];
@@ -284,7 +280,18 @@
           if ($element['class'] === 'xe-MultimediaThumb' ||
               strpos($element['alt'], ':') > 0 ||
               strpos($element['rel'], ':') > 0) {
-            array_push($MultimediaThumbList, $element);
+
+            if ($element['class'] === 'xe-MultimediaThumb') {
+              array_push($MultimediaThumbList, $element);
+            } else if (strpos($element['rel'], ':') > 0) {
+              if (preg_match($this->formatCheckRegExr, $element['rel'])) {
+                array_push($MultimediaThumbList, $element);
+              }
+            } else if (strpos($element['alt'], ':') > 0) {
+              if (preg_match($this->formatCheckRegExr, $element['alt'])) {
+                array_push($MultimediaThumbList, $element);
+              }
+            }
           }
         }
 
