@@ -1,6 +1,7 @@
 <?php
   class MultimediaThumb{
     var $options;
+    var $variables;
     var $document;
 
     function __construct ($options, $content = NULL, $document_srl = 0) {
@@ -23,6 +24,8 @@
         'isMakeThumbnail' => false, // 애드온을 통하여 섬네일을 생성한 경우
         'isHaveThumbnail' => false // 첨부파일로 인하여 섬네일을 갖고있을 경우
       );
+
+      $this->formatCheckRegExr = '/([a-z].+)\:([^/][a-zA-Z0-9\-\_\|]+)/i';
 
       if ($this->document['content'] !== NULL) {
         $this->proccessDocument();
@@ -277,7 +280,18 @@
           if ($element['class'] === 'xe-MultimediaThumb' ||
               strpos($element['alt'], ':') > 0 ||
               strpos($element['rel'], ':') > 0) {
-            array_push($MultimediaThumbList, $element);
+
+            if ($element['class'] === 'xe-MultimediaThumb') {
+              array_push($MultimediaThumbList, $element);
+            } else if (strpos($element['rel'], ':') > 0) {
+              if (preg_match($this->formatCheckRegExr, $element['rel'])) {
+                array_push($MultimediaThumbList, $element);
+              }
+            } else if (strpos($element['alt'], ':') > 0) {
+              if (preg_match($this->formatCheckRegExr, $element['alt'])) {
+                array_push($MultimediaThumbList, $element);
+              }
+            }
           }
         }
 
